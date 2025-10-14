@@ -12,27 +12,39 @@
 <body>
     <div class="card">
         <form>
-           
+
             <label for="cep" class="form-label">CEP</label>
             <input name="cep" type="text" class="form-control">
 
             <label for="log" class="form-label">Logradouro</label>
             <input name="log" type="text" class="form-control">
-            
+
             <label for="tele" class="form-label">Número</label>
             <input name="tele" type="tel" class="form-control">
-            
+
             <label for="uf" class="form-label">UF</label>
             <input name="uf" type="text" class="form-control">
-            
+
             <label for="comp" class="form-label">Complemento</label>
             <input name="comp" type="text" class="form-control">
-            
+
+            <input type="text" id="cep" placeholder="00000-000">
         </form>
     </div>
 </body>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
     crossorigin="anonymous"></script>
+
+    
+    <script src="https://unpkg.com/imask"></script>
+    <script>
+    var element = document.getElementById('cep');
+    var maskOptions = {
+      mask: '00000-000'
+    };
+    IMask(element, maskOptions);
+    </script>
 
 </html>
