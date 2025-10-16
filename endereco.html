@@ -8,7 +8,7 @@
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <title>Endereço Inteligente</title>
     <style>
-        /* Este seletor CSS se aplica se o input não estiver em foco (usuário ainda digitando) */
+        /* este seletor CSS se aplica se o input não estiver em foco (usuário ainda digitando) */
         div:has(input:invalid):has(input:not(:focus))>input {
             border: 1px solid red;
             color: red;
@@ -64,6 +64,12 @@
 <body>
     <div class="card form p-3 d-flex flex-grow-1">
         <h1 class="fs-2 p-1">Endereço Inteligente</h1>
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" value="" id="switchCheckDefault" switch checked>
+            <label class="form-check-label" for="switchCheckDefault">
+                Habilitar validação do HTML
+            </label>
+        </div>
         <form class="d-flex flex-column h-100">
             <div class="d-flex flex-column flex-grow-1">
                 <div class="mb-1">
@@ -80,8 +86,9 @@
                 </div>
                 <div class="mb-1">
                     <label for="num" class="form-label">Número<span class="ast-obrg">*</span></label>
-                    <input type="text" class="form-control" id="num" name="num" placeholder="Número" style="width: 8rem" required>
-                    <span class="subtitulo">Obrigatório</span>
+                    <input type="text" class="form-control" id="num" name="num" placeholder="Número" style="width: 8rem"
+                        required>
+                    <span class="subtitulo">O número não pode estar vazio</span>
                 </div>
                 <div class="mb-1">
                     <label for="uf" class="form-label">UF<span class="ast-obrg">*</span></label>
@@ -108,58 +115,103 @@
     <script src="https://unpkg.com/imask"></script>
     <script>
         const form = document.querySelector("form");
-        const ufEl = document.getElementById("uf");
+        const switchEl = document.getElementById("switchCheckDefault");
         const cepEl = document.getElementById("cep");
+        const logrEl = document.getElementById("logr");
         const numEl = document.getElementById("num");
+        const ufEl = document.getElementById("uf");
+        const compEl = document.getElementById("comp");
+
+        // habilita validação do HTML por padrão
+        switchEl.checked = true
+        form.removeAttribute('novalidate');
+        
+        // ativa e desativa a validação do HTML com elemento switch do bootstrap
+        switchEl.addEventListener('change', () => {
+            if (switchEl.checked) {
+                // desativa validação do HTML
+                form.removeAttribute('novalidate');
+            } else {
+                // ativa validação do HTML
+                form.setAttribute('novalidate', '');
+            }
+        });
 
 
+        // máscaras usando IMask
         IMask(ufEl, { mask: /^[a-zA-Z]{0,2}$/ });
         IMask(cepEl, { mask: "00000-000" });
 
+        // converter UF para maiúsculas
         function convertToUpper(event) {
             const targetElmt = event.target;
             targetElmt.value = targetElmt.value.toUpperCase();
         }
-        ufEl.addEventListener('input', convertToUpper)
 
+        ufEl.addEventListener('input', convertToUpper);
 
-        // permite apenas números
+        // permitir apenas números no campo Número
         numEl.addEventListener('input', () => {
-            // Remove tudo que não for dígito
             const onlyDigits = numEl.value.replace(/\D/g, '');
-            // Evita mover o cursor desnecessariamente
             if (numEl.value !== onlyDigits) {
                 numEl.value = onlyDigits;
             }
         });
 
-        // permite apenas números
-        numEl.addEventListener('input', (e) => {
-            const allowedChars = '0123456789';
 
-            if (!allowedChars.includes(e.target.value)) {
-                e.preventDefault();
-            }
-        });
-
-        // valida colagem para impedir texto inválido
-        numEl.addEventListener('paste', (e) => {
-            const paste = (e.clipboardData || window.clipboardData).getData('text');
-            if (!/^[0-9.-]+$/.test(paste)) {
-                e.preventDefault();
-            }
-        });
-
+        // envio do formulário
         form.addEventListener('submit', (e) => {
-            alert("Endereço cadastrado!")
-            const elmts = form.querySelectorAll("input")
-            console.log("Form submitted");
-            console.log(elmts);
+            e.preventDefault();
 
+            // validação em JavaScript customizada
+            let mensagens = [];
+
+            // validação do CEP
+            if (cepEl.value && cepEl.value.trim() !== "") {
+                if (cepEl.value.replace(/\D/g, "").length !== 8) {
+                    mensagens.push("O campo CEP precisa de 8 dígitos!");
+                }
+            } else {
+                mensagens.push("O campo CEP está vazio!");
+            }
+
+            // validação do logradouro
+            if (logrEl.value && logrEl.value.trim() !== "") {
+                if (logrEl.value.length < 5) {
+                    mensagens.push("O campo Logradouro precisa de no mínimo 5 caracteres!");
+                }
+            } else {
+                mensagens.push("O campo Logradouro está vazio!");
+            }
+
+            // validação do número
+            if (!numEl.value || numEl.value.trim() === "") {
+                mensagens.push("O campo Número está vazio!");
+            }
+
+            // validação da UF
+            if (ufEl.value && ufEl.value.trim() !== "") {
+                if (ufEl.value.length !== 2 || !/^[A-Z]{2}$/.test(ufEl.value)) {
+                    mensagens.push("O campo UF precisa ter exatamente 2 letras maiúsculas!");
+                }
+            } else {
+                mensagens.push("O campo UF está vazio!");
+            }
+
+            // exibe mensagem de erro ou de sucesso
+            if (mensagens.length > 0) {
+                alert("Erros encontrados:\n\n" + mensagens.join("\n"));
+            } else {
+                alert("Endereço cadastrado com sucesso!");
+                console.log({
+                    cep: cepEl.value,
+                    logradouro: logrEl.value,
+                    numero: numEl.value,
+                    uf: ufEl.value,
+                    complemento: compEl.value
+                });
+            }
         });
-
     </script>
-
 </body>
-
 </html>
