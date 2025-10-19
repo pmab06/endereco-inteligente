@@ -1,0 +1,50 @@
+/* este seletor CSS se aplica se o input não estiver em foco (usuário ainda digitando) */
+        div:has(input:invalid):has(input:not(:focus))>input {
+            border: 1px solid red;
+            color: red;
+        }
+
+        div:has(input:invalid):has(input:not(:focus))>label {
+            color: red;
+        }
+
+        div:has(input:invalid):has(input:not(:focus))>::placeholder {
+            color: rgba(255, 0, 0, 0.4);
+        }
+
+        div:has(input:invalid):has(input:not(:focus))>.subtitulo {
+            opacity: 100%;
+        }
+
+        div>.subtitulo {
+            opacity: 0%;
+            color: red;
+            font-size: smaller;
+        }
+
+        .ast-obrg {
+            color: red;
+        }
+
+        body {
+            background-color: rgb(42, 43, 49);
+        }
+
+        .card.form {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            height: 90%;
+            max-width: 720px;
+        }
+
+        .card.form>form button.btn {
+            margin-top: auto;
+            align-self: flex-end;
+        }
+
+        .card.form>form {
+            overflow-y: auto;
+        }
